@@ -1,0 +1,117 @@
+
+<!DOCTYPE html>
+<html>
+    <head>
+        <meta charset="utf-8">
+
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+        <title>SuperGopherBlog</title>
+        <style>
+            body, h2, p{
+                font-family: "Monaco", "Courier New", monospace;
+                margin:0;
+                padding:0;
+            }
+            body{
+                font-size: 18px;
+            }
+            #message{
+                background-color: rgba(173, 216, 230, 0.462);
+                border-left: 4px solid rgb(96, 209, 247);
+                border-radius: 10px;
+                width: 97%;
+                text-indent: 15px;
+            }
+            #header{ 
+                font-family: Monaco;
+                text-shadow: 3px 2px 2px rgb(96, 209, 247);
+                background-color: powderblue;
+                border-bottom: 1px solid rgb(96, 209, 247);
+                padding: 5px;
+                height: 80px;
+            }
+            #wrapper{
+                background-color: powderblue;
+                /* border-right: 5px outset red; */
+            }
+            #menu{
+                float: left;
+                width: 150px;
+            }
+            #ul-nav{
+                list-style-type: none;
+                margin: 0;
+                padding: 0;
+                width: 150px;
+                background-color: rgb(61, 197, 214);
+            }
+            #li-a-nav {
+                display: block;
+                color:rgb(9, 61, 152);
+                padding: 8px 16px;
+                border-bottom: 1px solid darkblue;
+                text-decoration: none;
+            }
+            li a:hover {
+                background-color: #555;
+                color: white;
+                }
+            #main{
+                background-color: #f7f7f7;
+                border-left: 1px solid #ccc;
+                margin-left: 150px;
+                padding: 20px;
+                height:max-content
+            }
+            #paginator{
+                width: 300px;
+                margin:auto;
+                text-decoration-line: overline underline;
+                /* text-decoration-color: rgb(96, 209, 247); */
+
+            }
+            #footer{ 
+                background-color: powderblue;
+                border-top: 1px solid rgb(96, 209, 247);
+            }
+        </style>
+    </head>
+    <body>
+        <div id="header"><h1 style="text-align:center">SuperGopher Blog</h1></div>
+        <div id="wrapper">
+            <div id="menu">
+                <ul id="ul-nav">
+                    <li><a id="li-a-nav" href="#">Главная</a></li>
+                    <li><a id="li-a-nav" href="/articles?page=0">Блог</a></li>
+                    <li><a id="li-a-nav" href="#">Контакты</a></li>
+                    <li><a id="li-a-nav" href="#">О сайте</a></li>
+                </ul>
+            </div>
+            <div id="main">
+                <ul>
+                    {{range .Articles}}
+                    <div id="message">
+                    <h3>{{.Title}}</h3>
+                    <hr style="height: 1px; background-color:darkblue;color:darkblue;">
+                    <p>{{.Text}}</p>
+                    <p style="font-size: 10px;float:right">{{.PostDate}}</p>
+                    </div >
+                    <br>
+                    {{end}}
+                </ul>
+                <div id="paginator">
+                {{if ge .PrevPage 0}}
+                <a href="/articles?page={{.PrevPage}}" style="text-align:center">Previous</a>
+                {{end}}
+                {{if le .NextPage .LastPage}}
+                <a href="/articles?page={{.NextPage}}" style="text-align:center">Next</a>
+                {{end}}
+                <a href="/articles?page={{.LastPage}}" style="text-align:center">Last</a>
+                </div>
+            </div>
+        </div>
+        <div id="footer">
+            <p style="text-align:center">Copyright © SuperGopher.ru, 2024</p>
+        </div>
+    </body>
+</html>
