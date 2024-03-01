@@ -7,7 +7,10 @@
         <meta name="viewport" content="width=device-width, initial-scale=1">
         <title>SuperGopherBlog</title>
         <style>
-            html, body{
+            html{
+                height: 100%;
+            }
+            body{
                 /* height: 100%; */
                 height: 100%;
             }
@@ -18,15 +21,19 @@
             }
             body{
                 font-size: 18px;
-                /* height: 100vh; */
             }
             #message{
-                background-color: rgba(173, 216, 230, 0.462);
+                background-color: #add8e676;
                 border-left: 4px solid rgb(96, 209, 247);
                 border-radius: 10px;
                 width: 97%;
-                /* text-indent: 15px; */
-                padding: 10px;
+                text-indent: 15px;
+                padding:10px;
+                word-wrap: break-word;
+                box-shadow: 12px 10px 10px 1px rgba(7, 49, 120, 0.4);
+            }
+            #message:hover{
+                background-color: #76c0d98b;;
             }
             #header{ 
                 font-family: Monaco;
@@ -38,12 +45,14 @@
             }
             #wrapper{
                 background-color: powderblue;
-                /* border-right: 5px outset red; */
                 height: 100%;
+                /* position:fixed; */
+                /* overflow:auto; */
             }
             #menu{
                 float: left;
                 width: 150px;
+                /* height: 100vh; */
             }
             #ul-nav{
                 list-style-type: none;
@@ -68,11 +77,11 @@
                 border-left: 1px solid #ccc;
                 margin-left: 150px;
                 padding: 20px;
-                /* height:max-content; */
-                
                 box-sizing: border-box;
-                min-height: 100%;
-                padding-bottom: 40px;
+                height: 100%;
+                padding-bottom:40px;
+                /* width:100vw; */
+                overflow: auto;
                 
             }
             #paginator{
@@ -82,37 +91,16 @@
                 /* text-decoration-color: rgb(96, 209, 247); */
 
             }
-            input[type=submit]{
-                background-color: rgb(96, 209, 247);
-                border: none;
-                border-radius: 4px;
-                color: rgb(0, 0, 0);
-                padding: 16px 32px;
-                text-decoration: none;
-                margin: 4px 2px;
-                cursor: pointer;
-                float: right;
-            }
-            input[type=submit]:hover {
-            background-color: rgb(18, 138, 179);
-            }
             #footer{ 
                 background-color: powderblue;
                 border-top: 1px solid rgb(96, 209, 247);
-                /* margin-top: -80px; */
-
                 height: 30px;
-                margin-top: -30px;
-
-            }
-            .row::after {
-                content: "";
-                display: table;
-                clear: both;
+                /* margin-top: 30px; */
             }
         </style>
     </head>
-    <body>
+    <body style="min-height:100vh">
+        
         <div id="header"><h1 style="text-align:center">SuperGopher Blog</h1></div>
         <div id="wrapper">
             <div id="menu">
@@ -121,26 +109,27 @@
                     <li><a id="li-a-nav" href="/articles?page=0">Блог</a></li>
                     <li><a id="li-a-nav" href="#">Контакты</a></li>
                     <li><a id="li-a-nav" href="#">О сайте</a></li>
+                    <li><a id="li-a-nav" href="/articles/create/">Написать статью</a></li>
                 </ul>
             </div>
             <div id="main">
-                <h2 style="text-indent: 15px;">Write an awesome blog post...</h2>
-                <br>
-                <div id="message">
-                    <form action="/articles/create/" method="post" target="_self">
-                        <input type="text" id="title" name="title" value="Title" style="font-size: 30px; border: 2px solid rgb(96, 209, 247);; border-radius: 5px; "><br>
-                        <hr style="height: 1px; background-color:darkblue;color:darkblue;">
-                        <!-- <input type="text" id="text" name="text" value="Text..." style="height:150px"><br> -->
-                        <textarea rows = "10" cols = "60" name = "text" style="width:99%; font-size: 18px;border: 2px solid rgb(96, 209, 247); border-radius: 5px; resize:none; ">Enter your SuperStory here...</textarea><br>
-                        <div class="row">
-                            <input type="submit" formmethod="post" value="Send" >
+                <ul>
+                    <div id="message">
+                        <h3>{{.Title}}</h3>
+                        <!-- <hr style="height: 1px; background-color:darkblue;color:darkblue;"> -->
+                        <p>{{.Text}}</p>
+                        <br>
+                        <div style="height: 12px;">
+                        <p style="font-size: 12px;float:right; text-align:center">{{.PostDate.Format "15:04 [02/01/2006]" }}</p>
                         </div>
-                    </form>
-                </div>
+                    </div >
+                    <br>
+                </ul>
             </div>
-            <div id="footer">
-                <p style="text-align:center">Copyright © SuperGopher.ru, 2024</p>
-            </div>
+        </div>
+        
+        <div id="footer">
+            <p style="text-align:center">Copyright © SuperGopher.ru, 2024</p>
         </div>
     </body>
 </html>

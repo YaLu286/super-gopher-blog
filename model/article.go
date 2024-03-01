@@ -2,9 +2,10 @@ package model
 
 import (
 	"database/sql"
-	"fmt"
-	_ "github.com/lib/pq"
+	// "fmt"
 	"time"
+
+	_ "github.com/lib/pq"
 )
 
 type Article struct {
@@ -26,11 +27,22 @@ func ConnectDB() error {
 	return nil
 }
 
-func GetArticles(offset int, limit int) ([]Article, error) {
+func GetArticle(ID int) (*Article, error) {
+	row := DB.QueryRow("SELECT * FROM articles WHERE id = $1", ID)
+	resArticle := &Article{}
 
-	queryStr := fmt.Sprintf("SELECT id, title, text, postdate FROM articles WHERE id BETWEEN %d AND %d;", offset, offset+limit)
-	// fmt.Println(queryStr)
-	rows, err := DB.Query(queryStr)
+	err := row.Scan(&resArticle.ID, &resArticle.Title, &resArticle.Text, &resArticle.PostDate)
+	if err != nil {
+		return nil, err
+	}
+
+	return resArticle, nil
+}
+
+func GetArticles(offset int, limit int) ([]Article, error) {
+	rows, err := DB.Query(`SELECT * FROM articles 
+							ORDER BY postdate DESC
+							LIMIT $1 offset $2;`, limit, offset)
 	if err != nil {
 		return nil, err
 	}
@@ -49,9 +61,6 @@ func GetArticles(offset int, limit int) ([]Article, error) {
 }
 
 func PostArticle(name string, text string) error {
-	// queryStr := fmt.Sprintf("INSERT INTO articles VALUES ((SELECT max(id) FROM articles) + 1, '%s', '%s', now())", name, text)
-	// fmt.Println(queryStr)
-	// _, err := DB.Exec(queryStr)
 	_, err := DB.Exec("INSERT INTO articles VALUES ((SELECT max(id) FROM articles) + 1, $1, $2, now())", name, text)
 	if err != nil {
 		return err
