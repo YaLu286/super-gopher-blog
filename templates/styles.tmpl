@@ -1,0 +1,115 @@
+{{define "styles"}}
+<style type="text/css" media="screen">
+    html{
+        height: 100%;
+    }
+    body{
+        height: 100%;
+    }
+    body, h2, p{
+        font-family: "Monaco", "Courier New", monospace;
+        margin:0;
+        padding:0;
+    }
+    body{
+        font-size: 18px;
+    }
+    #message{
+        background-color: #add8e676;
+        border-left: 4px solid rgb(96, 209, 247);
+        border-radius: 10px;
+        width: 97%;
+        text-indent: 15px;
+        padding:10px;
+        word-wrap: break-word;
+        box-shadow: 12px 10px 10px 1px rgba(7, 49, 120, 0.4);
+    }
+    #message:hover{
+        background-color: #76c0d98b;;
+    }
+    #header{ 
+        font-family: Monaco;
+        text-shadow: 3px 2px 2px rgb(96, 209, 247);
+        text-align: center;
+        background-color: powderblue;
+        border-bottom: 1px solid rgb(96, 209, 247);
+        padding: 5px;
+        height: 80px;
+    }
+    #login-logout{
+        float: left;
+        /* margin: 35px; */
+        border: 3px  solid rgb(96, 209, 247);
+        /* background-color: red; */
+        font-size: 16px;
+    }
+    #wrapper{
+        background-color: powderblue;
+        height: 100%;
+    }
+    #menu{
+        float: left;
+        width: 160px;
+    }
+    #ul-nav{
+        list-style-type: none;
+        margin: 0;
+        padding: 0;
+        width: 160px;
+        background-color: rgb(61, 197, 214);
+    }
+    #li-a-nav {
+        display: block;
+        color:rgb(9, 61, 152);
+        padding: 8px 16px;
+        border-bottom: 1px solid darkblue;
+        text-decoration: none;
+    }
+    li a:hover {
+        background-color: #555;
+        color: white;
+        }
+    #main{
+        background-color: #f7f7f7;
+        border-left: 1px solid #ccc;
+        margin-left: 150px;
+        padding: 20px;
+        box-sizing: border-box;
+        height: 100%;
+        padding-bottom:40px;
+        overflow: auto;
+        
+    }
+    #paginator{
+        width: 300px;
+        margin:auto;
+        text-decoration-line: overline underline;
+
+    }
+    #footer{ 
+        background-color: powderblue;
+        border-top: 1px solid rgb(96, 209, 247);
+        height: 30px;
+    }
+    input[type=submit]{
+                    background-color: rgb(96, 209, 247);
+                    border: none;
+                    border-radius: 4px;
+                    color: rgb(0, 0, 0);
+                    padding: 10px 24px;
+                    text-decoration: none;
+                    margin: 4px 2px;
+                    width:100%;
+                    cursor: pointer;
+                    /* float: right; */
+                }
+    input[type=submit]:hover {
+                background-color: rgb(18, 138, 179);
+                }
+    .row::after {
+        content: "";
+        display: table;
+        clear: both;
+    }
+</style>
+{{end}}

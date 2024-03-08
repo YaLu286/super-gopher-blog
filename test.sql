@@ -11,11 +11,17 @@
 -- INSERT INTO articles VALUES (2, 'Muspi Merol', 'Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.', now());
 -- INSERT INTO articles VALUES (3, 'Lorem Ipsum', 'Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.', now());
 
+-- DROP table users;
+
 -- create table users(
 --     login varchar not null,
 --     password varchar not null
 -- );
 
--- INSERT INTO users VALUES('super-gopher', '$2a$14$WmELrYBEC/Z59oyAhGXAjOK92jRwglirevw1h1a3GZdaL/fn93WI6')
+-- INSERT INTO users VALUES('super-gopher', '$2a$14$1uTQ/.kg8FAei6fJWTOGMOzcokrs9Ho4djNDciyhz4/pMsOCDwVBm')
 
 -- SELECT * FROM articles;
+
+select * from users;
+
+-- DELETE FROM articles WHERE id = 5;

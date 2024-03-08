@@ -4,9 +4,11 @@ import (
 	"SuperGopherBlog/auth"
 	"SuperGopherBlog/model"
 	"fmt"
+	"github.com/gorilla/mux"
 	"html/template"
 	"net/http"
 	"strconv"
+	"time"
 )
 
 type ViewData struct {
@@ -17,11 +19,9 @@ type ViewData struct {
 }
 
 func ShowArticles(w http.ResponseWriter, r *http.Request) {
-	pageID, err := strconv.Atoi(r.URL.Query().Get("page"))
-	if err != nil || pageID < 0 || pageID > 1000 {
-		http.NotFound(w, r)
-		return
-	}
+
+	vars := mux.Vars(r)
+	pageID, _ := strconv.Atoi(vars["page"])
 
 	limit := 3
 	offset := pageID * limit
@@ -32,7 +32,7 @@ func ShowArticles(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	tmpl, err := template.ParseFiles("./html/index.html")
+	tmpl, err := template.ParseFiles("./templates/index.html", "./templates/styles.tmpl", "./templates/header.tmpl", "./templates/menu.tmpl", "./templates/footer.tmpl")
 	if err != nil {
 		http.Error(w, "Internal Server Error", 500)
 		fmt.Println(err)
@@ -43,7 +43,7 @@ func ShowArticles(w http.ResponseWriter, r *http.Request) {
 		Articles: articles,
 		PrevPage: pageID - 1,
 		NextPage: pageID + 1,
-		LastPage: 1000,
+		LastPage: 1000, // TO FIX!
 	}
 
 	err = tmpl.Execute(w, data)
@@ -53,68 +53,57 @@ func ShowArticles(w http.ResponseWriter, r *http.Request) {
 	}
 }
 
-func CreateArticle(w http.ResponseWriter, r *http.Request) {
+func CreateArticlePage(w http.ResponseWriter, r *http.Request) {
+	tmpl, err := template.ParseFiles("./templates/create.html")
+	if err != nil {
+		http.Error(w, "Internal Server Error", 500)
+		return
+	}
 
-	if auth.IsAuthorized(w, r) {
-
-		if r.Method == "POST" {
-			title := r.PostFormValue("title")
-			text := r.PostFormValue("text")
-			err := model.PostArticle(title, text)
-			if err != nil {
-				http.Error(w, "Internal Server Error", 500)
-				fmt.Println(err)
-				return
-			}
-			tmpl, err := template.ParseFiles("./html/posted.html")
-			if err != nil {
-				http.Error(w, "Internal Server Error", 500)
-				fmt.Println(err)
-				return
-			}
-			w.WriteHeader(http.StatusCreated)
-			err = tmpl.Execute(w, nil)
-			if err != nil {
-				fmt.Println(err)
-				http.Error(w, "Internal Server Error", 500)
-			}
-
-		} else {
-			tmpl, err := template.ParseFiles("./html/create.html")
-			if err != nil {
-				http.Error(w, "Internal Server Error", 500)
-				fmt.Println(err)
-				return
-			}
-
-			err = tmpl.Execute(w, nil)
-			if err != nil {
-				fmt.Println(err)
-				http.Error(w, "Internal Server Error", 500)
-			}
-		}
-
-	} else {
-		// LoginHandler(w, r)
-		http.Redirect(w, r, "/login", http.StatusFound)
+	err = tmpl.Execute(w, nil)
+	if err != nil {
+		fmt.Println(err)
+		http.Error(w, "Internal Server Error", 500)
 	}
 }
 
-func ShowArticle(w http.ResponseWriter, r *http.Request) {
-	articleID, err := strconv.Atoi(r.URL.Query().Get("id"))
-	if err != nil || articleID < 0 || articleID > 1000 {
-		http.NotFound(w, r)
+func CreateArticleHandler(w http.ResponseWriter, r *http.Request) {
+	title := r.PostFormValue("title")
+	text := r.PostFormValue("text")
+
+	err := model.PostArticle(title, text)
+	if err != nil {
+		http.Error(w, "Internal Server Error", 500)
+		fmt.Println(err)
 		return
 	}
+
+	tmpl, err := template.ParseFiles("./templates/posted.html")
+	if err != nil {
+		http.Error(w, "Internal Server Error", 500)
+		fmt.Println(err)
+		return
+	}
+
+	w.WriteHeader(http.StatusCreated)
+	err = tmpl.Execute(w, nil)
+	if err != nil {
+		fmt.Println(err)
+		http.Error(w, "Internal Server Error", 500)
+	}
+
+}
+
+func ShowArticle(w http.ResponseWriter, r *http.Request) {
+	vars := mux.Vars(r)
+	articleID, _ := strconv.Atoi(vars["id"])
 
 	article, err := model.GetArticle(articleID)
 	if err != nil {
 		return
 	}
 
-	fmt.Println(article)
-
-	tmpl, err := template.ParseFiles("./html/article.html")
+	tmpl, err := template.ParseFiles("./templates/article.html")
 	if err != nil {
 		http.Error(w, "Internal Server Error", 500)
 		return
@@ -126,16 +115,101 @@ func ShowArticle(w http.ResponseWriter, r *http.Request) {
 	}
 }
 
+func LoginPage(w http.ResponseWriter, r *http.Request) {
+	tmpl, err := template.ParseFiles("./templates/login.html", "./templates/styles.tmpl", "./templates/header.tmpl", "./templates/menu.tmpl", "./templates/footer.tmpl")
+	if err != nil {
+		http.Error(w, "Internal Server Error", 500)
+		return
+	}
+
+	var data struct {
+		Message string
+	}
+
+	c, err := r.Cookie("login")
+	if err == nil && c.Value == "retry" && c.Expires.Before(time.Now()) {
+		data.Message = "Invalid login and(or) password. Please, try again..."
+	}
+
+	err = tmpl.Execute(w, &data)
+	if err != nil {
+		http.Error(w, "Internal Server Error", 500)
+	}
+}
+
 func LoginHandler(w http.ResponseWriter, r *http.Request) {
 
-	if r.Method == "POST" {
-		auth.Signin(w, r)
-		// http.ServeFile(w, r, "html/success.html")
-		// http.Redirect(w, r, "articles/create/", http.StatusPermanentRedirect)
-		w.Write([]byte("OK"))
-		return
+	res := auth.Signin(w, r)
+
+	r.Method = "GET"
+
+	if res {
+		http.Redirect(w, r, "/articles/create/", http.StatusFound)
 	} else {
-		http.ServeFile(w, r, "html/login.html")
+		http.SetCookie(w, &http.Cookie{
+			Name:    "login",
+			Value:   "retry",
+			Expires: time.Now().Add(time.Second * 10),
+		})
+		http.Redirect(w, r, "/login", http.StatusFound)
 	}
+
+}
+
+func LogoutHandler(w http.ResponseWriter, r *http.Request) {
+
+	auth.Logout(w, r)
+
+	r.Method = "GET"
+
+	http.Redirect(w, r, "/login", http.StatusFound)
+
+}
+
+func RegisterPage(w http.ResponseWriter, r *http.Request) {
+
+	tmpl, err := template.ParseFiles("./templates/register.html", "./templates/styles.tmpl", "./templates/header.tmpl", "./templates/menu.tmpl", "./templates/footer.tmpl")
+	if err != nil {
+		http.Error(w, "Internal Server Error", 500)
+		return
+	}
+
+	var data struct {
+		Message string
+	}
+
+	c, err := r.Cookie("Register-Error")
+	if err == nil && c.Value != "" && c.Expires.Before(time.Now()) {
+		data.Message = c.Value
+	}
+
+	err = tmpl.Execute(w, &data)
+	if err != nil {
+		http.Error(w, "Internal Server Error", 500)
+	}
+
+}
+
+func RegisterHandler(w http.ResponseWriter, r *http.Request) {
+
+	err := auth.Register(w, r)
+
+	if err != nil {
+
+		fmt.Println(r.Method)
+
+		r.Method = "GET"
+
+		http.SetCookie(w, &http.Cookie{
+			Name:    "Register-Error",
+			Value:   err.Error(),
+			Expires: time.Now().Add(time.Second * 10),
+		})
+
+		http.Redirect(w, r, "/register", http.StatusFound)
+		return
+	}
+
+	http.ServeFile(w, r, "./templates/success.html")
 
 }

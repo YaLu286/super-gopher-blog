@@ -1,0 +1,38 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <meta charset="utf-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+        <title>Login</title>
+        {{template "styles"}}
+    </head>
+    <body style="min-height:100vh">  
+        {{template "header"}}
+        <div id="wrapper">
+            {{template "menu"}}
+            <div id="main">
+                <h3 style="text-align: center;">Only a true SuperGopher may post articles here.</h3>
+                <h3 style="text-align: center;">Let's create a new SuperGopher account!</h3>
+                <div><p style="color: red; font-size: 12px; text-align: center;">{{.Message}}</p></div>
+                <br>
+                <div id="message" style="position: relative; left: calc(47% - 160px); padding: 30px; width:20%; text-indent: 0;">
+                    <form action="/register" method="post" target="_self">
+                        <label for="login" style="font-size: 16px">Your name:</label><br>
+                        <input type="text" id="login" name="login" value="" style="height: 20px; border: 2px solid rgb(96, 209, 247); width: 100%; border-radius: 5px; "><br>
+                        <br>
+                        <label for="password" style="font-size: 16px">Your password:</label><br>
+                        <input type="password" id="password" name="password" value="" style="height: 20px; border: 2px solid rgb(96, 209, 247);width: 100%; border-radius: 5px; "><br>
+                        <label for="password_repeat" style="font-size: 16px">Repeat your password:</label><br>
+                        <input type="password" id="password_repeat" name="password_repeat" value="" style="height: 20px; border: 2px solid rgb(96, 209, 247);width: 100%; border-radius: 5px; "><br>
+                        <!-- <input type="text" id="text" name="text" value="Text..." style="height:150px"><br> -->
+                        <hr>
+                        <div class="row">
+                            <input type="submit" formmethod="post" value="Send" style="float:left">
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+        {{template "footer"}}
+    </body>
+</html>

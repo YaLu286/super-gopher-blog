@@ -19,3 +19,11 @@ func FindUser(login string) (*User, bool) {
 	}
 	return u, true
 }
+
+func (u User) SaveUser() error {
+	_, err := DB.Exec("INSERT INTO users VALUES($1, $2)", u.Login, u.Password)
+	if err != nil {
+		return err
+	}
+	return nil
+}

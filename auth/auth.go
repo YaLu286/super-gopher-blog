@@ -3,6 +3,7 @@ package auth
 import (
 	// "SuperGopherBlog/controller"
 	"SuperGopherBlog/model"
+	"errors"
 	"fmt"
 	"github.com/google/uuid"
 	"golang.org/x/crypto/bcrypt"
@@ -21,21 +22,51 @@ func (s Session) IsExpired() bool {
 	return s.expiry.Before(time.Now())
 }
 
-func Signin(w http.ResponseWriter, r *http.Request) {
+func Register(w http.ResponseWriter, r *http.Request) error {
+	login := r.PostFormValue("login")
+
+	password := r.PostFormValue("password")
+
+	passwordRepeat := r.PostFormValue("password_repeat")
+
+	_, exists := model.FindUser(login)
+
+	if exists {
+		return errors.New("User already exists")
+	}
+
+	if password != passwordRepeat {
+		return errors.New("Passwords doesn't match")
+	}
+
+	passHash, err := HashPassword(password)
+	if err != nil {
+		return err
+	}
+
+	u := model.User{Login: login, Password: passHash}
+
+	err = u.SaveUser()
+	if err != nil {
+		return err
+	}
+
+	return nil
+}
+
+func Signin(w http.ResponseWriter, r *http.Request) bool {
 	login := r.PostFormValue("login")
 	password := r.PostFormValue("password")
 
+	fmt.Println(HashPassword(password))
 	user, exists := model.FindUser(login)
 
-	if !exists || CheckPasswordHash(password, user.Password) {
-		w.WriteHeader(http.StatusUnauthorized)
-		w.Write([]byte("BAD CREDENTIALS!"))
-		return
+	if !exists || !CheckPasswordHash(password, user.Password) {
+		return false
 	}
 
 	sessionToken := uuid.NewString()
 	expiresAt := time.Now().Add(120 * time.Second)
-
 	Sessions[sessionToken] = Session{
 		username: user.Login,
 		expiry:   expiresAt,
@@ -46,7 +77,28 @@ func Signin(w http.ResponseWriter, r *http.Request) {
 		Value:   sessionToken,
 		Expires: expiresAt,
 	})
+	return true
+}
 
+func Logout(w http.ResponseWriter, r *http.Request) {
+	c, err := r.Cookie("session_cookie")
+
+	if err != nil {
+		return
+	}
+	if _, exists := Sessions[c.Value]; exists {
+		delete(Sessions, c.Value)
+	}
+}
+
+func Authorize(next http.Handler) http.Handler {
+	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		if !IsAuthorized(w, r) {
+			http.Redirect(w, r, "/login", http.StatusTemporaryRedirect)
+			return
+		}
+		next.ServeHTTP(w, r)
+	})
 }
 
 func IsAuthorized(w http.ResponseWriter, r *http.Request) bool {
@@ -60,8 +112,6 @@ func IsAuthorized(w http.ResponseWriter, r *http.Request) bool {
 	}
 
 	sessionToken := c.Value
-
-	fmt.Print(sessionToken)
 
 	userSession, exist := Sessions[sessionToken]
 
