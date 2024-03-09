@@ -54,7 +54,7 @@ func ShowArticles(w http.ResponseWriter, r *http.Request) {
 }
 
 func CreateArticlePage(w http.ResponseWriter, r *http.Request) {
-	tmpl, err := template.ParseFiles("./templates/create.html")
+	tmpl, err := template.ParseFiles("./templates/create.html", "./templates/styles.tmpl", "./templates/header.tmpl", "./templates/menu.tmpl", "./templates/footer.tmpl")
 	if err != nil {
 		http.Error(w, "Internal Server Error", 500)
 		return
